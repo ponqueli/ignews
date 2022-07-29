@@ -1,8 +1,16 @@
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import Head from "next/head";
 import { SubscribeButton } from "../components/SubscribeButton";
 import { stripe } from "../services/stripe";
 import styles from "./home.module.scss";
+
+// Client-side rendering => nao precisa de indexação, info carregada através de uma ação do usuário, info que não tem necessidade de estar ali, 
+// Server-side rendering => dados dinâmicos da sessao do usuário, contexto da requisicao(demora mais)
+// Static-Site-Generation => html compartilhado com todas pessoas (home blog, pag produto, iguais pra todo mundo)
+
+// Post do Blob
+// Conteúdo -> (SSG)
+// Comentários -> (Client-side) Só depois que a página é carregada
 
 interface HomeProps {
   product:{
@@ -38,7 +46,29 @@ export default function Home({ product }: HomeProps) {
 }
 
 //tudo colocado aqui dentro é executado dentro do servidor node
-export const getServerSideProps: GetServerSideProps = async () =>{
+// export const getServerSideProps: GetServerSideProps = async () =>{
+
+//   const price = await stripe.prices.retrieve("price_1LQd3uLFPxynCjDp6dZgMJNp",{
+//     expand: ["product"]
+//   });
+
+//   const product ={
+//     priceId: price.id,
+//     amount: new Intl.NumberFormat('en-US',{
+//       style: 'currency',
+//       currency: 'USD',
+//     }).format(price.unit_amount / 100), //preço em centavos
+//   }
+
+//   return{
+//     props:{
+//       product
+//     }
+//   }
+// }
+
+//apenas em páginas que podem ser estáticas (todo mundo verá essa página)
+export const getStaticProps: GetStaticProps = async () =>{
 
   const price = await stripe.prices.retrieve("price_1LQd3uLFPxynCjDp6dZgMJNp",{
     expand: ["product"]
@@ -55,6 +85,7 @@ export const getServerSideProps: GetServerSideProps = async () =>{
   return{
     props:{
       product
-    }
+    },
+    revalidate: 60 * 60 * 24 //revalidate todos os dias = 24 horas
   }
 }
