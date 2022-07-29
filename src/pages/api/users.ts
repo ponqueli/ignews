@@ -1,4 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next"
+
+// estratégia de autenticação
+// 1)Token JWT salvo no Storage do navegador com uma data de expiração
+// 2) Next Auth 
+    // (simples, login social, github, google, facebook, twitter) 
+    // não quer se preocupar armazenar credenciais de acesso do usuario no backend 
+// 3) provider de autenticação externo COGNITO, AUTH0
+
+
 export default (request:NextApiRequest, response:NextApiResponse) => {
   const users = [
     { id: "1", name: "Gaia" },
