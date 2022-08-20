@@ -5,6 +5,7 @@ export function Header() {
   return (
     <header className={styles.headerContainer}>
       <div className={styles.headerContent}>
+        {/* imagens sempre na pasta public */}
         <img src="/images/logo.svg" alt="logo" />
         <nav>
           <a className={styles.active}>Home</a>
