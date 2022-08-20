@@ -17,3 +17,6 @@ export default class MyDocument extends Document{
     )
   }
 }
+
+//não pode importar scss dentro do document. Ele é um nível muito próximo do html. 
+//então não pode colocar o global scss aqui. Tem que colocar no _app.tsx.
