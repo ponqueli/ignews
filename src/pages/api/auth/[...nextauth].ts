@@ -26,12 +26,12 @@ export default NextAuth({
       
       try{
         await fauna.query( //linguagem FQL
-          q.If(
+          q.If( //todo if do fauna é obrigado a ter um else
             q.Not(
               q.Exists(
                 q.Match(
                   q.Index("user_by_email"),
-                  q.Casefold(user.email)
+                  q.Casefold(user.email) //normaliza caso o usuario digite maiusculo ou minusculo
                 )
               )
             ),
@@ -39,7 +39,7 @@ export default NextAuth({
               q.Collection("users"), //passar primeiro o nome da collection
               { data : { email }} //passar o objeto com os dados dentro do data
             ),
-            q.Get(
+            q.Get( //select do fauna
               q.Match(
                 q.Index("user_by_email"),
                 q.Casefold(user.email)
