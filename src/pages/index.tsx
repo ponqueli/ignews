@@ -52,7 +52,7 @@ export default function Home({ product }: HomeProps) {
 //     expand: ["product"]
 //   });
 
-//   const product ={
+//   const product = {
 //     priceId: price.id,
 //     amount: new Intl.NumberFormat('en-US',{
 //       style: 'currency',
@@ -60,14 +60,17 @@ export default function Home({ product }: HomeProps) {
 //     }).format(price.unit_amount / 100), //preço em centavos
 //   }
 
-//   return{
-//     props:{
+//   return {
+//     props: {
 //       product
 //     }
 //   }
 // }
 
+//APENAS USAR QUANDO O CONTEÚDO FOR O MESMO PARA TODOS NA APLICAÇÃO
 //apenas em páginas que podem ser estáticas (todo mundo verá essa página)
+//mais performático que o getServerSideProps
+//getServerSideProps mais dinâmico
 export const getStaticProps: GetStaticProps = async () =>{
 
   const price = await stripe.prices.retrieve("price_1LQd3uLFPxynCjDp6dZgMJNp",{
@@ -82,10 +85,10 @@ export const getStaticProps: GetStaticProps = async () =>{
     }).format(price.unit_amount / 100), //preço em centavos
   }
 
-  return{
-    props:{
+  return {
+    props: {
       product
     },
-    revalidate: 60 * 60 * 24 //revalidate todos os dias = 24 horas
+    revalidate: 60 * 60 * 24 //revalidate todos os dias = 24 horas, em segundos. Após esse tempo essa página estática é criada novamente
   }
 }
