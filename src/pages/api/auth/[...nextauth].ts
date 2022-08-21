@@ -1,5 +1,4 @@
-import { signIn } from 'next-auth/react';
-import NextAuth from "next-auth";
+import NextAuth from "next-auth"; //(social, gmail, github, twitter, facebook)
 import GithubProvider from "next-auth/providers/github";
 
 import { fauna } from "../../../services/fauna";
@@ -26,7 +25,7 @@ export default NextAuth({
       const { email } = user;
       
       try{
-        await fauna.query(
+        await fauna.query( //linguagem FQL
           q.If(
             q.Not(
               q.Exists(
@@ -37,8 +36,8 @@ export default NextAuth({
               )
             ),
             q.Create(
-              q.Collection("users"),
-              { data : { email }}
+              q.Collection("users"), //passar primeiro o nome da collection
+              { data : { email }} //passar o objeto com os dados dentro do data
             ),
             q.Get(
               q.Match(
