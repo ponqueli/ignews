@@ -71,7 +71,7 @@ export default function Home({ product }: HomeProps) {
 //apenas em páginas que podem ser estáticas (todo mundo verá essa página)
 //mais performático que o getServerSideProps
 //getServerSideProps mais dinâmico
-export const getStaticProps: GetStaticProps = async () =>{
+export const getStaticProps: GetStaticProps = async () => {
 
   const price = await stripe.prices.retrieve("price_1LQd3uLFPxynCjDp6dZgMJNp",{
     expand: ["product"]

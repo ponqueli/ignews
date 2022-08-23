@@ -29,7 +29,6 @@ export function SubscribeButton({ priceId }: SubscribeButtonProps) {
       } catch (error) {
         alert(error.message);
       }
-
     }else{
       signIn('github');
       return;

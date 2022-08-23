@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   ) 
 }
 
-export default MyApp
+export default MyApp;
 
 //uma coisa que repete em todas as páginas. Igual o App do react.
 //toda vez que o usuário troca de tela, ele vai ser recriado do zero.
