@@ -1,60 +1,79 @@
-import NextAuth from "next-auth"; //(social, gmail, github, twitter, facebook)
-import GithubProvider from "next-auth/providers/github";
+import NextAuth from 'next-auth'
+import GithubProvider from 'next-auth/providers/github'
+import { query as q } from 'faunadb'
 
-import { fauna } from "../../../services/fauna";
-import { query as q } from "faunadb";
+import { fauna } from '../../../services/fauna'
 
 export default NextAuth({
   secret: process.env.SIGNIN_KEY,
-  // Configure one or more authentication providers
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+
       authorization: {
         params: {
-          scope: 'read:user',
-        },
-      },
-    }),
-    // ...add more providers here
+          scope: 'read:user'
+        }
+      }
+    })
   ],
-  
+
   callbacks: {
-    async signIn({ user }) {
-      const { email } = user;
-      
-      try{
-        await fauna.query( //linguagem FQL
-          q.If( //todo if do fauna é obrigado a ter um else
-            q.Not(
-              q.Exists(
-                q.Match(
-                  q.Index("user_by_email"),
-                  q.Casefold(user.email) //normaliza caso o usuario digite maiusculo ou minusculo
-                )
-              )
-            ),
-            q.Create(
-              q.Collection("users"), //passar primeiro o nome da collection
-              { data : { email }} //passar o objeto com os dados dentro do data
-            ),
-            q.Get( //select do fauna
+    async session({ session }) {
+      /** When fauna query does not find any data, it throws an error by default,
+        then we always need to put the query inside a try cath block, to treat
+        the error in best way */
+      try {
+        const userHasAnActiveSubscription = await fauna.query(
+          q.Get(
+            q.Intersection([
               q.Match(
-                q.Index("user_by_email"),
-                q.Casefold(user.email)
-              )
-            )
+                q.Index('subscription_by_user_ref'),
+                q.Select(
+                  'ref',
+                  q.Get(
+                    q.Match(
+                      q.Index('user_by_email'),
+                      q.Casefold(session.user.email)
+                    )
+                  )
+                )
+              ),
+              q.Match(q.Index('subscription_by_status'), 'active')
+            ])
           )
-        );
-        return true;
-      }catch(e){
-        console.log(e);
-        return false;
+        )
+
+        return {
+          ...session,
+          activeSubscription: userHasAnActiveSubscription
+        }
+      } catch (err) {
+        return {
+          ...session,
+          activeSubscription: null
+        }
       }
     },
-  },
-})
 
-// FaunaDB - HTTP (vamos usar)
-// DynamoDB - AWS
+    async signIn({ user }) {
+      
+      try {
+        await fauna.query(
+          q.If(
+            q.Not(
+              q.Exists(q.Match(q.Index('user_by_email'), q.Casefold(user.email)))
+            ),
+            q.Create(q.Collection('users'), { data: { email:user.email } }),
+            q.Get(q.Match(q.Index('user_by_email'), q.Casefold(user.email)))
+          )
+        )
+
+        return true
+      } catch {
+        return false
+      }
+    }
+  }
+})

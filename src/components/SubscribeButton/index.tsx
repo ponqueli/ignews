@@ -1,4 +1,5 @@
 import { useSession, signIn } from "next-auth/react";
+import { useRouter } from 'next/router'
 import { api } from "../../services/api";
 import { getStripeJs } from "../../services/stripe-js";
 import styles from "./styles.module.scss";
@@ -12,26 +13,32 @@ interface SubscribeButtonProps {
 // getStaticprops (SSG) => quando a página está sendo renderizada
 // API routes (acao através de um clique do usuário)
 
-export function SubscribeButton({ priceId }: SubscribeButtonProps) {
-  const { status } = useSession(); 
+export function SubscribeButton() {
+  const { status } = useSession()
+  const router = useRouter()
   
-  async function handleSubscribe(){
-    if(status === "authenticated"){
-      try {
-        const response = await api.post('/subscribe');
+  async function handleSubscribe() {
+    if (status === 'unauthenticated') {
+      signIn('github')
+      return
+    }
 
-        const { sessionId } = response.data;
+    // if (session.activeSubscription) {
+    //   router.push('/posts')
+    //   return
+    // }
 
-        const stripe = await getStripeJs();
+    try {
+      // Calling the API ROUTE and creating a checkout session
+      const response = await api.post('/subscribe')
 
-        await stripe.redirectToCheckout({ sessionId });
+      const { sessionId } = response.data
 
-      } catch (error) {
-        alert(error.message);
-      }
-    }else{
-      signIn('github');
-      return;
+      const stripe = await getStripeJs()
+
+      await stripe.redirectToCheckout({ sessionId })
+    } catch (err) {
+      alert(err.message)
     }
   }
 

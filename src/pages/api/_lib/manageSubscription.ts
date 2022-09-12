@@ -1,38 +1,54 @@
-import { query as q } from "faunadb";
-import { fauna } from "../../../services/fauna";
-import { stripe } from "../../../services/stripe";
+import { query as q } from 'faunadb'
 
-export async function saveSubscription(
-  subscriptionId: string,
+import { fauna } from '../../../services/fauna'
+import { stripe } from '../../../services/stripe'
+
+interface IManageSubscriptionsData {
+  subscriptionId: string
   customerId: string
-){
-  // Find user in FaunaDB with customerId
+  createAction: boolean
+}
+
+export async function manageSubscriptions({
+  subscriptionId,
+  customerId,
+  createAction = false
+}: IManageSubscriptionsData): Promise<void> {
   const userRef = await fauna.query(
     q.Select(
-      "ref",
-      q.Get(
-        q.Match(
-          q.Index('user_by_stripe_customer_id'),
-          customerId
-        )
-      )
+      'ref',
+      q.Get(q.Match(q.Index('user_by_stripe_customer_id'), customerId))
     )
   )
 
-  // get subscription data from stripe
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  debugger
   const subscriptionData = {
     id: subscription.id,
     userId: userRef,
     status: subscription.status,
-    price_id: subscription.items.data[0].price.id,
+    priceId: subscription.items.data[0].price.id
   }
-  // Save subscriptionId to user in FaunaDB
-  await fauna.query(
-    q.Create(
-      q.Collection('subscriptions'),
-      { data: subscriptionData }
+
+  if (createAction) {
+    await fauna.query(
+      q.If(
+        q.Not(q.Exists(q.Match(q.Index('subscription_by_id'), subscriptionId))),
+        q.Create(q.Collection('subscriptions'), {
+          data: subscriptionData
+        }),
+        null
+      )
     )
-  )
+  } else {
+    await fauna.query(
+      q.Replace(
+        q.Select(
+          'ref',
+          q.Get(q.Match(q.Index('subscription_by_id'), subscriptionId))
+        ),
+        { data: subscriptionData }
+      )
+    )
+  }
 }
