@@ -22,7 +22,7 @@ export async function manageSubscriptions({
   )
 
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-  debugger
+  
   const subscriptionData = {
     id: subscription.id,
     userId: userRef,
@@ -32,13 +32,8 @@ export async function manageSubscriptions({
 
   if (createAction) {
     await fauna.query(
-      q.If(
-        q.Not(q.Exists(q.Match(q.Index('subscription_by_id'), subscriptionId))),
-        q.Create(q.Collection('subscriptions'), {
-          data: subscriptionData
-        }),
-        null
-      )
+      q.Create(q.Collection('subscriptions'), 
+      { data: subscriptionData })
     )
   } else {
     await fauna.query(

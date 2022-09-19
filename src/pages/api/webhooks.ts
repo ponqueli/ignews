@@ -59,6 +59,8 @@
      }
  
      const { type } = stripeEvent
+
+     console.log("Type: " + type)
  
      if (relevantEvents.has(type)) {
        try {
@@ -67,25 +69,26 @@
            case 'customer.subscription.updated':
            case 'customer.subscription.deleted':
              const subscription = stripeEvent.data.object as Stripe.Subscription
-             debugger
              await manageSubscriptions({
                subscriptionId: subscription.id,
                customerId: subscription.customer.toString(),
-               createAction: type === 'customer.subscription.created'
+               createAction: true //type === 'customer.subscription.created'
              })
+
+             console.log("passou manageSubscriptions")
  
              break
  
            case 'checkout.session.completed':
              const checkoutSession = stripeEvent.data
                .object as Stripe.Checkout.Session
- 
-            debugger
              await manageSubscriptions({
                subscriptionId: checkoutSession.subscription.toString(),
                customerId: checkoutSession.customer.toString(),
                createAction: true
              })
+
+             console.log("passou manageSubscriptions checkout.session.completed")
  
              break
  
