@@ -13,7 +13,7 @@ export async function manageSubscriptions({
   subscriptionId,
   customerId,
   createAction = false
-}: IManageSubscriptionsData): Promise<void> {
+}: IManageSubscriptionsData): Promise<void> {  
   const userRef = await fauna.query(
     q.Select(
       'ref',

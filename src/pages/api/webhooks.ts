@@ -36,7 +36,6 @@
  
  const relevantEvents = new Set([
    'checkout.session.completed',
-   'customer.subscription.created',
    'customer.subscription.updated',
    'customer.subscription.deleted'
  ])
@@ -52,31 +51,26 @@
        stripeEvent = stripe.webhooks.constructEvent(
          buff,
          stripeSignature,
-         process.env.STRIPE_WEBHOOK_SECRET
+         process.env.STRIPE_WEB_HOOK_SECRET
        )
      } catch (err) {
        return response.status(400).send(`Webhook error: ${err.message}`)
      }
  
      const { type } = stripeEvent
-
-     console.log("Type: " + type)
  
      if (relevantEvents.has(type)) {
        try {
          switch (type) {
-           case 'customer.subscription.created':
            case 'customer.subscription.updated':
            case 'customer.subscription.deleted':
              const subscription = stripeEvent.data.object as Stripe.Subscription
              await manageSubscriptions({
                subscriptionId: subscription.id,
                customerId: subscription.customer.toString(),
-               createAction: true //type === 'customer.subscription.created'
+               createAction: false
              })
 
-             console.log("passou manageSubscriptions")
- 
              break
  
            case 'checkout.session.completed':
@@ -88,8 +82,6 @@
                createAction: true
              })
 
-             console.log("passou manageSubscriptions checkout.session.completed")
- 
              break
  
            default:
