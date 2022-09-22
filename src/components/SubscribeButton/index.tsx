@@ -18,7 +18,7 @@ export function SubscribeButton() {
   const router = useRouter()
 
   async function handleSubscribe() {
-    if (session.status === 'unauthenticated') {
+    if (session?.status === 'unauthenticated') {
       signIn('github')
       return
     }

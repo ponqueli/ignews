@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -56,10 +56,16 @@ export default function PostPreview({ post }: PostPreviewProps) {
   );
 }
 
-export const getStaticPaths = () => {
+//só existe em página estática escrita com o colchete [slug].tsx
+export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [],
+    paths: [ 
+     // { params: { slug: '5-advanced-react-patterns' } }
+    ],
     fallback: 'blocking',
+    // true (se alguem acessar o post q ainda nao foi acessada de forma estatica, carrega o conteudo pelo lado do cliente, no browser),
+    // false (se o post nao for acessado de forma estatica retorna um 404 nao encontrado), não tenta buscar
+    // blocking (tenta carregar na camada do next server side rendering e só quando tudo estiver carregado ele vai mostrar o conteudo)
   }
 }
 

@@ -17,7 +17,7 @@ interface Post {
   updatedAt: string;
 }
 
-export default function Posts( { posts } ) {
+export default function Posts( { posts }: PostsProps ) {
   return (
     <>
       <Head>
