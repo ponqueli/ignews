@@ -14,19 +14,19 @@ interface SubscribeButtonProps {
 // API routes (acao através de um clique do usuário)
 
 export function SubscribeButton() {
-  const { status } = useSession()
+  const {data: session} = useSession();
   const router = useRouter()
-  
+
   async function handleSubscribe() {
-    if (status === 'unauthenticated') {
+    if (session.status === 'unauthenticated') {
       signIn('github')
       return
     }
 
-    // if (session.activeSubscription) {
-    //   router.push('/posts')
-    //   return
-    // }
+    if (session?.activeSubscription) {
+      router.push('/posts')
+      return
+    }
 
     try {
       // Calling the API ROUTE and creating a checkout session

@@ -20,7 +20,7 @@ export default NextAuth({
   ],
 
   callbacks: {
-    async session({ session }) {
+    async session({session}) {
       /** When fauna query does not find any data, it throws an error by default,
         then we always need to put the query inside a try cath block, to treat
         the error in best way */
