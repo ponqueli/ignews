@@ -39,4 +39,40 @@
       margin: 0.5rem 0;
     }
   }
+
+  &.previewContent {
+    background: linear-gradient(var(--gray-100), transparent);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+.continueReading {
+  padding: 2rem;
+  margin: 4rem 0 2rem;
+  text-align: center;
+  background: var(--gray-850);
+  border-radius: 3rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+
+  a {
+    color: var(--yellow-500);
+    margin-left: 0.4rem;
+    
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.shakeHorizontal{
+  animation:shakeHorizontal 0.8s linear both
+} 
+@keyframes shakeHorizontal{
+  0%,100%{transform:translateX(0)}
+  10%,30%,50%,70%{transform:translateX(-10px)}
+  20%,40%,60%{transform:translateX(10px)}
+  80%{transform:translateX(8px)}
+  90%{transform:translateX(-8px)}
 }
