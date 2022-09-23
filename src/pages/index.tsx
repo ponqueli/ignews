@@ -37,7 +37,7 @@ export default function Home({ product }: HomeProps) {
             Get access to all the publications <br/>
             for <span>{product.amount} monthly</span>
           </p>
-          <SubscribeButton priceId={product.priceId}/>
+          <SubscribeButton/>
         </section>
         <img src="/images/avatar.svg" alt="girl coding" />
       </main>

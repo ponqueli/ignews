@@ -4,10 +4,6 @@ import { api } from "../../services/api";
 import { getStripeJs } from "../../services/stripe-js";
 import styles from "./styles.module.scss";
 
-interface SubscribeButtonProps {
-  priceId: string;
-}
-
 // 3 lugares seguros para fazer um checkout por exemplo
 // getServerSideProps (SSR)=> quando a página está sendo renderizada
 // getStaticprops (SSG) => quando a página está sendo renderizada
